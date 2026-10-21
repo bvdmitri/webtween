@@ -1,5 +1,9 @@
 # @bvdmitri/webtween
 
+[![npm](https://img.shields.io/npm/v/@bvdmitri/webtween)](https://www.npmjs.com/package/@bvdmitri/webtween)
+[![docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://bvdmitri.github.io/webtween/)
+[![CI](https://github.com/bvdmitri/webtween/actions/workflows/ci.yml/badge.svg)](https://github.com/bvdmitri/webtween/actions/workflows/ci.yml)
+
 Smooth slow motion in the browser: frames generated between frames by a neural network (RIFE 4.25),
 on WebGPU, from decoded `VideoFrame`s to decoded `VideoFrame`s. Decoding, encoding and audio stay
 with your application.

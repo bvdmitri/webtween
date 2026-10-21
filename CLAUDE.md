@@ -5,8 +5,8 @@ between two frames with a neural network (RIFE), on WebGPU where the browser has
 WebAssembly otherwise. It takes and gives decoded `VideoFrame`s. It is not a player and not a
 muxer. This file is the operating manual for anyone (human or agent) changing the code.
 
-The repository is private and the package is not published yet (`"private": true`). It is built
-as if it were public, so going public is a decision, not a cleanup.
+The repository is public and the package is published on npm as `@bvdmitri/webtween`, released
+by tag (docs/guide/releasing.md).
 
 ## How to start any task
 

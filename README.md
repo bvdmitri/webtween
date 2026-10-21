@@ -1,10 +1,18 @@
 # webtween
 
+[![CI](https://github.com/bvdmitri/webtween/actions/workflows/ci.yml/badge.svg)](https://github.com/bvdmitri/webtween/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/bvdmitri/webtween/branch/main/graph/badge.svg)](https://codecov.io/gh/bvdmitri/webtween)
+[![npm](https://img.shields.io/npm/v/@bvdmitri/webtween)](https://www.npmjs.com/package/@bvdmitri/webtween)
+[![docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://bvdmitri.github.io/webtween/)
+[![license](https://img.shields.io/npm/l/@bvdmitri/webtween)](./LICENSE)
+
 Smooth slow motion in the browser: frames generated between frames by a neural network (RIFE),
 on WebGPU, from decoded `VideoFrame`s to decoded `VideoFrame`s.
 
 webtween is a library, not a player or a muxer: decoding, encoding, audio and playback belong to
-the application that uses it. It is private and unreleased while it is an experiment.
+the application that uses it. It is published on npm as
+[`@bvdmitri/webtween`](https://www.npmjs.com/package/@bvdmitri/webtween), with its documentation at
+[bvdmitri.github.io/webtween](https://bvdmitri.github.io/webtween/).
 
 ## What it does
 

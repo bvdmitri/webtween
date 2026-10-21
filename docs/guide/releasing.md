@@ -15,7 +15,7 @@ The release workflow (`.github/workflows/release.yml`) then:
 - checks that the tag matches the package's version and that the changelog has its section;
 - runs every check and test;
 - builds `dist/` and puts the model in `models/`, checked against its manifest by `tools/pack`;
-- stages the package on npm (npm trusted publishing, no token);
+- stages the package on npm with provenance (npm trusted publishing, no token);
 - creates the GitHub Release from the changelog section.
 
 The jobs that install and run the repository's code hold no write permission: the tarball they pack
@@ -26,9 +26,9 @@ made by a job that can only write releases. Neither runs the repository's code.
    `npm stage list` and `npm stage approve <id>` in a terminal. Approval asks for two-factor
    authentication, which CI cannot give, so no version goes live without a maintainer.
 
-The repository is private, so versions are published without provenance: npm signs provenance
-only for public repositories. Once the repository is public, add `--provenance` to the stage step
-in `release.yml` and `"provenance": true` to the package's `publishConfig`.
+Each version carries provenance: npm records the commit and the workflow run that built it, and
+shows it on the package page. Version 0.1.0 was published by hand before the repository was
+public, so it has none.
 
 The workflow is safe to re-run: a version already on npm is not staged again, and an existing
 Release is left as it is. A tag is not a release until the GitHub Release exists and the npm

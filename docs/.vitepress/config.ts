@@ -1,5 +1,6 @@
 // The documentation site: the Markdown under docs/, the package README as the guide, and the API
-// reference TypeDoc writes into docs/api. Built in CI; not published while the repository is private.
+// reference TypeDoc writes into docs/api. Published on
+// GitHub Pages by .github/workflows/docs.yml: https://bvdmitri.github.io/webtween/.
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
