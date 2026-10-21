@@ -57,7 +57,8 @@ onnx adapter refuses a model without them (`ModelContractError`, surfaced as `mo
   published warp.
 - **ONNX**: opset 19, the TorchScript exporter, dynamic height and width, checked by
   `onnx.checker`. The graph uses GridSample, which onnxruntime-web's WebGPU backend supports.
-- **Output**: `models/rife-4.25-fp32.onnx` (about 23 MB) and `models/manifest.json` (sizes, hashes,
+- **Output**: `models/rife-4.25-fp32.onnx` (about 23 MB, float32 only: a float16 model is not
+  built, by decision, while float32 is fast enough) and `models/manifest.json` (sizes, hashes,
   source, alignment). `models/` is ignored by git.
 
 ```sh
@@ -84,8 +85,3 @@ Node) and checks the halfway frame the same way.
 `test/fixtures/model/blend.onnx` (283 bytes, built by `webtween-export fixture`) has the contract's
 inputs and output and computes `img0 + (img1 - img0) * t`. It lets every package test loading and
 running a model without the real weights.
-
-## Provisional
-
-- A float16 model (about half the size) is not built yet: converting the graph with
-  onnxconverter-common did not finish, and it is on the [roadmap](./roadmap.md).

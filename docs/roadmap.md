@@ -25,7 +25,6 @@ and the pages beside it.
   takes about 177 ms at 720p and 398 ms at 1080p on WebGPU, and 1.7 s at 720p on one-thread
   WASM. Measure on real clips and other GPUs, and try onnxruntime-web's native WebGPU backend again
   once it computes RIFE correctly (ADR 0002).
-- **A float16 model**: about half the download, faster where the GPU has `shader-f16`.
 - **Fewer copies**: import decoded frames without `copyTo`, and hand generated frames out without
   a readback, where the browser allows it.
 - **cutaway**: slow motion in its export worker, its keyframed views kept in sync through
