@@ -25,6 +25,9 @@ and the pages beside it.
   takes about 177 ms at 720p and 398 ms at 1080p on WebGPU, and 1.7 s at 720p on one-thread
   WASM. Measure on real clips and other GPUs, and try onnxruntime-web's native WebGPU backend again
   once it computes RIFE correctly (ADR 0002).
+- **A cheaper mode**: none is planned soon. A float16 model is not built (float32 is fast enough
+  for an export), and running the flow at half resolution would trade quality for speed; at about
+  398 ms per generated frame at 1080p, a slowed 1080p export is practical and 4K is not.
 - **Fewer copies**: import decoded frames without `copyTo`, and hand generated frames out without
   a readback, where the browser allows it.
 - **cutaway**: slow motion in its export worker, its keyframed views kept in sync through

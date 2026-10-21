@@ -6,11 +6,18 @@ below uses [Mediabunny](https://mediabunny.dev) for those, in a worker.
 
 ## Serve the model and the runtime
 
-Build the model ([MODEL.md](../MODEL.md)) and serve `rife-4.25-fp32.onnx` from your site. Serve
-onnxruntime-web's WebAssembly files too (`node_modules/onnxruntime-web/dist/*.wasm` and `*.mjs`;
-webtween uses `ort-wasm-simd-threaded.jsep.*`),
-or let your bundler copy them, and pass their folder as `wasmPaths`. Neither is fetched before
-you create an interpolator.
+The package ships the model: `@bvdmitri/webtween/models/rife-4.25-fp32.onnx` (about 23 MB), beside
+`models/manifest.json` with its size and SHA-256. By default `createInterpolator` fetches it from
+the package (`new URL('../models/rife-4.25-fp32.onnx', import.meta.url)`, which bundlers emit as an
+asset); an application that copies it to its own static folder passes that URL as `model`.
+
+onnxruntime-web's WebAssembly is served by the application: `RUNTIME_FILES`
+(`ort-wasm-simd-threaded.jsep.wasm`, about 28 MB, and its `.mjs`) from `onnxruntime-web/dist/`, at
+exactly `ONNXRUNTIME_WEB_VERSION`. Pass their folder as `wasmPaths`.
+
+Both are fetched with a plain `fetch` when `createInterpolator` runs and never before, so a
+versioned path with `Cache-Control: public, max-age=31536000, immutable` serves them from the
+browser's cache after the first use.
 
 ## Slow a clip down
 
@@ -35,10 +42,10 @@ async function slowMotion(file: File, factor: number): Promise<ArrayBuffer> {
   if (track === null) throw new Error('no video');
 
   const interpolator = await createInterpolator({
-    model: '/models/rife-4.25-fp32.onnx',
+    model: '/webtween/0.1.0/rife-4.25-fp32.onnx',
     width: track.displayWidth,
     height: track.displayHeight,
-    wasmPaths: '/ort/',
+    wasmPaths: '/webtween/0.1.0/',
   });
 
   const output = new Output({ format: new Mp4OutputFormat(), target: new BufferTarget() });
@@ -81,6 +88,23 @@ const timeline = slowdownTimeline({ factor: 2, range: { start: 3, end: 5 } });
 timeline.output(4); // 5: one second into the range lands two seconds in
 timeline.source(5); // 4
 ```
+
+## Frames from anywhere
+
+Any `VideoFrame` works: a decoder's, or one made on another GPU device (web360's reframer,
+websteady's canvas). The interpolator reads each pair once with `VideoFrame.copyTo` as RGBA, so the
+device a frame came from does not matter; frames must be the interpolator's `width` and `height`.
+
+## The timeline is exact
+
+`slowdownTimeline({ factor, range }).output(t)` is rounded to whole microseconds as `slowDown`
+times its frames, so for a source frame at `t` it is exactly the timestamp `slowDown` gives it.
+Place silence or shift audio after the range with it.
+
+## Cost
+
+A generated frame takes about 177 ms at 720p and 398 ms at 1080p on WebGPU (Chrome, Apple M2 Pro),
+and seconds on WASM. No cheaper mode is planned soon; cap slowed exports at 1080p.
 
 ## Errors
 

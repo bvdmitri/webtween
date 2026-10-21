@@ -134,6 +134,9 @@ importers:
       '@webtween/onnx':
         specifier: workspace:*
         version: link:../adapters/onnx
+      '@webtween/pack':
+        specifier: workspace:*
+        version: link:../../tools/pack
       '@webtween/webgpu':
         specifier: workspace:*
         version: link:../adapters/webgpu
@@ -176,6 +179,24 @@ importers:
         version: 8.1.6(@types/node@26.6.1)(yaml@2.9.1)
 
   tools/docs:
+    devDependencies:
+      '@types/node':
+        specifier: 26.6.1
+        version: 26.6.1
+      vitest:
+        specifier: 4.1.11
+        version: 4.1.11(@types/node@26.6.1)(@vitest/coverage-istanbul@4.1.11)(vite@8.3.4(@types/node@26.6.1)(yaml@2.9.1))
+
+  tools/pack:
+    devDependencies:
+      '@types/node':
+        specifier: 26.6.1
+        version: 26.6.1
+      vitest:
+        specifier: 4.1.11
+        version: 4.1.11(@types/node@26.6.1)(@vitest/coverage-istanbul@4.1.11)(vite@8.3.4(@types/node@26.6.1)(yaml@2.9.1))
+
+  tools/release:
     devDependencies:
       '@types/node':
         specifier: 26.6.1

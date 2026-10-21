@@ -42,7 +42,8 @@ as if it were public, so going public is a decision, not a cleanup.
 6. **The model is documented and reproducible.** Its contract (inputs, outputs, ranges, the size
    alignment) and its provenance are in `docs/MODEL.md`. It is built only by `tools/export`, from
    upstream files pinned by hash, and checked against PyTorch by its tests. Model files are never
-   committed; only the few-hundred-byte test fixture is.
+   committed (only the few-hundred-byte test fixture is): the release workflow builds the model
+   and the package ships it, checked against its manifest.
 7. **Strict lint, zero warnings.** Complexity 8, nesting 3, 30 lines a function, 300 lines a
    file, 3 parameters, no magic numbers. Fix the design rather than disable a rule. The Python
    export follows the same limits through ruff.

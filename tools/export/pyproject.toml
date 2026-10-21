@@ -46,3 +46,13 @@ max-statements = 30
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["D", "PLR2004", "S"]
+
+# On Linux (CI) PyTorch comes from its CPU-only index: the export needs no GPU, and the default
+# Linux wheels pull gigabytes of CUDA libraries.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]

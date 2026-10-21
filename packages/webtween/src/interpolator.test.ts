@@ -78,6 +78,19 @@ describe('createInterpolator on WASM', () => {
     await interpolator.destroy();
   });
 
+  it('fetches the package model when none is given', async () => {
+    const fetched: string[] = [];
+    const fetching = platform({
+      fetch: (url) => {
+        fetched.push(url);
+        return Promise.resolve(blend);
+      },
+    });
+    await createInterpolator({ ...SIZE, platform: fetching });
+    expect(fetched).toHaveLength(1);
+    expect(fetched[0]?.endsWith('/models/rife-4.25-fp32.onnx')).toBe(true);
+  });
+
   it('takes the model as an ArrayBuffer', async () => {
     const interpolator = await createInterpolator({
       model: blend.slice().buffer,

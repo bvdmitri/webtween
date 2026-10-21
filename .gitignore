@@ -10,6 +10,8 @@ samples/*
 !samples/README.md
 # Exported models are built by tools/export and never committed (docs/MODEL.md).
 models/
+# The package's copy of them, made by tools/pack when it is built.
+packages/webtween/models/
 # The model export's Python environment and the upstream source it fetches.
 tools/export/.venv/
 tools/export/.upstream/

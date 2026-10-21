@@ -3,6 +3,7 @@ export type { Interpolator, InterpolatorOptions } from './interpolator';
 export { slowDown, slowdownTimeline } from './slowDown';
 export type { SlowDownOptions, SlowdownOptions } from './slowDown';
 export { WebtweenError } from './errors';
+export { MODEL_FILE, ONNXRUNTIME_WEB_VERSION, RUNTIME_FILES } from './files';
 export type { WebtweenErrorCode } from './errors';
 export { browserFrames, browserPlatform } from './platform';
 export type { FrameOps, Platform } from './platform';

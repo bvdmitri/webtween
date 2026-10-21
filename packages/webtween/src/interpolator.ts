@@ -9,18 +9,20 @@ import {
 
 import { cpuEngine, gpuEngine, type Engine } from './engines';
 import { asWebtweenError, WebtweenError } from './errors';
+import { defaultModel } from './files';
 import { browserPlatform, type Platform } from './platform';
 
 /**
  * How to make an {@link Interpolator}.
  *
- * @remarks `model` is the model's bytes, or a URL fetched when the interpolator is created and not
- * before. `width` and `height` are the frames' visible size. `backend: 'wasm'` keeps the model off
+ * @remarks `model` is the model's bytes, or a URL fetched with a plain `fetch` (so through the
+ * browser's HTTP cache) when the interpolator is created and not before; by default the package's
+ * own `models/rife-4.25-fp32.onnx`. `width` and `height` are the frames' visible size. `backend: 'wasm'` keeps the model off
  * the GPU; the default uses WebGPU where the browser has it. `wasmPaths` is where onnxruntime-web's
  * WebAssembly files are served from, when not beside the bundle.
  */
 export interface InterpolatorOptions {
-  readonly model: ArrayBuffer | Uint8Array<ArrayBuffer> | URL | string;
+  readonly model?: ArrayBuffer | Uint8Array<ArrayBuffer> | URL | string;
   readonly width: number;
   readonly height: number;
   readonly backend?: 'auto' | 'wasm';
@@ -47,7 +49,7 @@ async function modelBytes(
   options: InterpolatorOptions,
   platform: Platform,
 ): Promise<Uint8Array<ArrayBuffer>> {
-  const { model } = options;
+  const model = options.model ?? defaultModel();
   if (model instanceof Uint8Array) return model;
   if (model instanceof ArrayBuffer) return new Uint8Array(model);
   try {

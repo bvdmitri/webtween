@@ -68,6 +68,14 @@ uv run webtween-export build   # writes models/
 uv run webtween-export fixture # writes test/fixtures/model/blend.onnx
 ```
 
+## In the package
+
+The published package ships the model at `models/rife-4.25-fp32.onnx` with `models/manifest.json`,
+so a version of `@bvdmitri/webtween` pins its model. The release workflow builds both
+(`.github/workflows/model.yml`, on CPU-only PyTorch), and `tools/pack` copies them into the package,
+refusing a model whose SHA-256 is not its manifest's. `createInterpolator` fetches that file when
+no `model` is given; an application that serves its own copy passes its URL.
+
 ## Verified
 
 The export's tests (`tools/export/tests`) run on the fetched release:

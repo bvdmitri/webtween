@@ -1,4 +1,5 @@
 import {
+  microseconds,
   outputTime,
   secondsToMicroseconds,
   seconds,
@@ -40,7 +41,8 @@ function checked(options: SlowdownOptions): Slowdown {
 
 /**
  * The time map of a slowdown, in seconds: where a source time lands in the slowed video, and
- * which source time an output time shows. A caller keeping its own timeline in source time (a
+ * which source time an output time shows. Both are rounded to whole microseconds, so `output` of a
+ * source frame's time is exactly the timestamp {@link slowDown} gives that frame. A caller keeping its own timeline in source time (a
  * keyframed camera path, a caption) reads it through `source`.
  */
 export function slowdownTimeline(options: SlowdownOptions): {
@@ -52,7 +54,9 @@ export function slowdownTimeline(options: SlowdownOptions): {
     (map: typeof outputTime) =>
     (time: number): number => {
       const at = secondsToMicroseconds(seconds(time));
-      return microsecondsToSeconds(map(at, s));
+      // Whole microseconds, as slowDown times its frames, so the two agree exactly.
+      const whole = microseconds(Math.round(map(at, s)));
+      return microsecondsToSeconds(whole);
     };
   return { output: through(outputTime), source: through(sourceTimeAt) };
 }

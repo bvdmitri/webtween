@@ -93,3 +93,25 @@ describe('slowdownTimeline', () => {
     expect(slowdownTimeline({ factor: 4 }).source(4)).toBe(1);
   });
 });
+
+describe('slowdownTimeline and slowDown together', () => {
+  it('place each source frame at exactly the time the timeline gives it', async () => {
+    const options = { factor: 1.5, range: { start: 0.02, end: 0.07 } };
+    const timeline = slowdownTimeline(options);
+    const sourceTimes = [0, 33_333, 66_666, 99_999];
+    async function* source(): AsyncGenerator<VideoFrame> {
+      for (const time of sourceTimes) {
+        await Promise.resolve();
+        yield grey(200, SIZE, time);
+      }
+    }
+    const emitted: number[] = [];
+    const stream = slowDown(source(), { interpolator, ...options, frames: fakeFrames });
+    for await (const frame of stream) {
+      if ((frame as unknown as FakeFrame).rgba[0] === 200) emitted.push(frame.timestamp);
+    }
+    const placed = sourceTimes.map((time) => timeline.output(time / 1e6) * 1e6);
+    expect(emitted).toEqual(placed.map((time) => Math.round(time)));
+    for (const [k, time] of placed.entries()) expect(time).toBeCloseTo(emitted[k]!, 6);
+  });
+});

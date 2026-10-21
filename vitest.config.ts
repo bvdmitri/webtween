@@ -14,6 +14,7 @@ export default defineConfig({
       provider: 'istanbul',
       include: ['packages/**/src/**/*.ts', 'tools/**/src/**/*.ts'],
       exclude: [
+        '**/.stryker-tmp/**',
         '**/*.test.ts',
         '**/index.ts',
         '**/main.ts',

@@ -1,0 +1,16 @@
+{
+  "name": "@webtween/pack",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Puts the exported model into the package before it is built, checked against its manifest.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.1",
+    "vitest": "4.1.11"
+  }
+}
