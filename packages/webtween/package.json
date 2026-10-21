@@ -40,7 +40,7 @@
     "@webtween/webgpu": "workspace:*",
     "tsdown": "0.23.0",
     "vitest": "4.1.11",
-    "webgpu": "0.6.1",
+    "webgpu": "0.6.2",
     "@webtween/pack": "workspace:*"
   },
   "keywords": [

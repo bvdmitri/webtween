@@ -23,6 +23,6 @@
     "@types/node": "26.6.1",
     "@webgpu/types": "0.1.74",
     "vitest": "4.1.11",
-    "webgpu": "0.6.1"
+    "webgpu": "0.6.2"
   }
 }
