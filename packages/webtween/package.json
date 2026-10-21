@@ -56,7 +56,6 @@
     "url": "https://github.com/bvdmitri/webtween/issues"
   },
   "publishConfig": {
-    "access": "public",
-    "provenance": true
+    "access": "public"
   }
 }

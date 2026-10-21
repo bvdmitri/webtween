@@ -1,7 +1,7 @@
 name: Release
 
 # One tag releases a version everywhere: pushing vX.Y.Z builds the model (model.yml), checks and packs @bvdmitri/webtween X.Y.Z,
-# stages it on npm with provenance (npm trusted publishing, so no token is stored), and creates the
+# stages it on npm (npm trusted publishing, so no token is stored), and creates the
 # GitHub Release from the version's CHANGELOG section. A maintainer then approves the staged version
 # on npmjs.com, with 2FA, and it goes live; CI cannot approve. Safe to re-run: a version already on
 # npm is not staged again, and an existing Release is left alone. See docs/guide/releasing.md.
@@ -103,7 +103,8 @@ jobs:
           name: release
           path: release/
       # The tarball as packed and tested above; publishing a tarball runs none of its scripts.
-      - run: npm stage publish release/*.tgz --provenance --access public
+      # No --provenance while the repository is private: npm signs provenance for public ones only.
+      - run: npm stage publish release/*.tgz --access public
 
   github:
     name: Create the GitHub Release
