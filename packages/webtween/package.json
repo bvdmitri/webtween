@@ -1,0 +1,50 @@
+{
+  "name": "@bvdmitri/webtween",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Smooth slow motion in the browser: frames generated between frames by a neural network, on WebGPU.",
+  "license": "MIT",
+  "author": "bvdmitri",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bvdmitri/webtween.git",
+    "directory": "packages/webtween"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@webgpu/types": "0.1.74",
+    "onnxruntime-web": "1.30.0"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.1",
+    "@webtween/core": "workspace:*",
+    "@webtween/onnx": "workspace:*",
+    "@webtween/webgpu": "workspace:*",
+    "tsdown": "0.23.0",
+    "vitest": "4.1.11",
+    "webgpu": "0.6.1"
+  },
+  "keywords": [
+    "slow motion",
+    "frame interpolation",
+    "rife",
+    "webgpu",
+    "webcodecs",
+    "onnx"
+  ]
+}

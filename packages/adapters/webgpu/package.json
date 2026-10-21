@@ -1,0 +1,28 @@
+{
+  "name": "@webtween/webgpu",
+  "version": "0.0.0",
+  "private": true,
+  "description": "webtween's WebGPU shaders: frames packed into the model's input and its output unpacked to pixels, on the GPU.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@webtween/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.1",
+    "@webgpu/types": "0.1.74",
+    "vitest": "4.1.11",
+    "webgpu": "0.6.1"
+  }
+}

@@ -1,0 +1,48 @@
+[project]
+name = "webtween-export"
+version = "0.0.0"
+description = "Exports Practical-RIFE to the ONNX model webtween runs (docs/MODEL.md)."
+license = "MIT"
+requires-python = "==3.12.*"
+dependencies = ["numpy==2.3.4", "onnx==1.19.1", "onnxruntime==1.23.2"]
+
+[project.scripts]
+webtween-export = "webtween_export.main:main"
+
+[dependency-groups]
+dev = ["pytest==8.4.2", "ruff==0.14.2"]
+# What building the real model needs; CI leaves it out (`--no-group export`), it is gigabytes.
+export = ["gdown==5.2.0", "torch==2.9.0"]
+
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+# Pin everything: nothing newer than two weeks before the lockfile was written.
+exclude-newer = "2026-10-07T00:00:00Z"
+default-groups = ["dev", "export"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["upstream: needs the Practical-RIFE weights (webtween-export fetch)"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C90", "PL", "RUF", "S", "SIM", "PTH", "D"]
+# Summaries are noun phrases, as in the TypeScript packages (D401).
+ignore = ["D203", "D213", "S101", "D100", "D104", "D401"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 8
+
+[tool.ruff.lint.pylint]
+max-args = 3
+max-branches = 8
+max-statements = 30
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D", "PLR2004", "S"]

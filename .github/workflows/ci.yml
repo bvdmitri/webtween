@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+# Actions are pinned to the commit of the release named beside each.
+jobs:
+  verify:
+    name: Checks, typecheck, lint, format, dependency rules, tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          lfs: true
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      # The WebGPU adapter's tests render on the GPU; the runner has none, so Mesa's software
+      # Vulkan driver stands in.
+      - run: sudo apt-get update && sudo apt-get install --yes --no-install-recommends mesa-vulkan-drivers
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm verify
+      # The documentation site builds, its links resolve, and the API reference has no warnings.
+      - run: pnpm docs:build
+
+  export:
+    name: Model export (lint and the tests that need no weights)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: tools/export
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+      # Without the `export` group (PyTorch is gigabytes); the tests that need it are not collected.
+      - run: uv sync --locked --no-group export
+      - run: uv run --no-sync ruff check .
+      - run: uv run --no-sync ruff format --check .
+      - run: uv run --no-sync pytest -m "not upstream"

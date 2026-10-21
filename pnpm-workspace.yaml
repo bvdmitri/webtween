@@ -1,0 +1,12 @@
+packages:
+  - packages/*
+  - packages/adapters/*
+  - tools/*
+
+allowBuilds:
+  # esbuild's install script checks its platform binary, which Vite (the demo, the docs) runs.
+  esbuild: true
+  # The Dawn bindings ship prebuilt; their install script only clears the macOS quarantine flag.
+  webgpu: false
+  # onnxruntime-web's protobuf dependency; its install script only warns about old versions.
+  protobufjs: false

@@ -1,0 +1,28 @@
+{
+  "name": "@webtween/onnx",
+  "version": "0.0.0",
+  "private": true,
+  "description": "webtween's model runtime: the interpolation network on onnxruntime-web, loaded only when asked for.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@webtween/core": "workspace:*",
+    "onnxruntime-web": "1.30.0"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.1",
+    "@webgpu/types": "0.1.74",
+    "vitest": "4.1.11"
+  }
+}

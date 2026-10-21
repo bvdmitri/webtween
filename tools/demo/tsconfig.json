@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM"],
+    "types": ["node", "@webgpu/types", "vite/client"],
+    "paths": { "@bvdmitri/webtween": ["../../packages/webtween/src/index.ts"] }
+  },
+  "include": ["src/**/*.ts", "vite.config.ts"]
+}
