@@ -95,8 +95,8 @@ importers:
         specifier: 4.1.11
         version: 4.1.11(@types/node@26.6.1)(@vitest/coverage-istanbul@4.1.11)(vite@8.3.4(@types/node@26.6.1)(yaml@2.9.1))
       webgpu:
-        specifier: 0.6.1
-        version: 0.6.1(supports-color@7.2.0)
+        specifier: 0.6.2
+        version: 0.6.2(supports-color@7.2.0)
 
   packages/core:
     devDependencies:
@@ -147,8 +147,8 @@ importers:
         specifier: 4.1.11
         version: 4.1.11(@types/node@26.6.1)(@vitest/coverage-istanbul@4.1.11)(vite@8.3.4(@types/node@26.6.1)(yaml@2.9.1))
       webgpu:
-        specifier: 0.6.1
-        version: 0.6.1(supports-color@7.2.0)
+        specifier: 0.6.2
+        version: 0.6.2(supports-color@7.2.0)
 
   tools/checks:
     devDependencies:
@@ -2702,6 +2702,10 @@ packages:
     resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
     engines: {node: '>=4'}
 
+  postcss@8.5.30:
+    resolution: {integrity: sha512-zkd+e9S1AQHhmaBKye9zlFHWjOwVgqXl1q3ECYy8561K7qxR2cREf/STLskulBFd78k6AOFeA+ff1TtEzk9bAA==}
+    engines: {node: ^10 || ^12 || >=14}
+
   postcss@8.5.31:
     resolution: {integrity: sha512-YUbWYCgErwnMAVkjUnYa+KlMBzGpHwiIt/DE7f0G33AuX2LH9UcTk6KgWxd3zRU+pN3u/C+Xl3EnMLM4Hea7Sg==}
     engines: {node: ^10 || ^12 || >=14}
@@ -3323,8 +3327,8 @@ packages:
   weapon-regex@2.0.6:
     resolution: {integrity: sha512-iJC2vqYp+bh3r4X6zjuP0h65XqXjgUX3nJgmhj0PQMrdhAbUwCfN76CSTEEQqV3G7468kjOJ69PmytTG8l/8Gg==}
 
-  webgpu@0.6.1:
-    resolution: {integrity: sha512-T+B65/j2jhyFjbWHsVZ4TJw0nk0RVT27lG+nL3V5IIYMsvuVYKYOUli/yJhMpwvXAwqVPZehakWvTjxk+mK8LQ==}
+  webgpu@0.6.2:
+    resolution: {integrity: sha512-3L4GfmqJLvYUIEWJngEQY+2HQiUlAFkg8+P8NDDj3Xx5hHHIFO/r8JW+ynfqBj7kHN4mbnwO74uB+lrRtLhp4Q==}
 
   which@2.0.2:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}
@@ -5871,6 +5875,12 @@ snapshots:
 
   pluralize@8.0.0: {}
 
+  postcss@8.5.30:
+    dependencies:
+      nanoid: 3.3.20
+      picocolors: 1.1.1
+      source-map-js: 1.2.2
+
   postcss@8.5.31:
     dependencies:
       nanoid: 3.3.20
@@ -6349,7 +6359,7 @@ snapshots:
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
-      postcss: 8.5.31
+      postcss: 8.5.30
       rolldown: 1.2.14
       tinyglobby: 0.2.17
     optionalDependencies:
@@ -6449,7 +6459,7 @@ snapshots:
 
   weapon-regex@2.0.6: {}
 
-  webgpu@0.6.1(supports-color@7.2.0):
+  webgpu@0.6.2(supports-color@7.2.0):
     dependencies:
       '@webgpu/types': 0.1.74
       debug: 4.4.3(supports-color@7.2.0)
