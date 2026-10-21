@@ -1,18 +1,19 @@
 name: Release
 
-# One tag releases a version everywhere: pushing vX.Y.Z builds the model (model.yml), stages
-# @bvdmitri/webtween X.Y.Z on npm with the model inside and
-# provenance (npm trusted publishing, so no token is stored) and creates the GitHub Release from
-# the version's CHANGELOG section. A maintainer then approves the staged version on npmjs.com, with
-# 2FA, and it goes live; CI cannot approve. Safe to re-run: a version already on npm is not staged
-# again, and an existing Release is left alone. See docs/guide/releasing.md.
+# One tag releases a version everywhere: pushing vX.Y.Z builds the model (model.yml), checks and packs @bvdmitri/webtween X.Y.Z,
+# stages it on npm with provenance (npm trusted publishing, so no token is stored), and creates the
+# GitHub Release from the version's CHANGELOG section. A maintainer then approves the staged version
+# on npmjs.com, with 2FA, and it goes live; CI cannot approve. Safe to re-run: a version already on
+# npm is not staged again, and an existing Release is left alone. See docs/guide/releasing.md.
+#
+# The jobs that install and run the repository's code hold no write permission; staging (OIDC) and
+# the Release (contents) each run in their own job on the packed tarball and the notes alone.
 on:
   push:
     tags: ['v*.*.*']
 
 permissions:
-  contents: write
-  id-token: write
+  contents: read
 
 concurrency:
   group: release-${{ github.ref }}
@@ -23,23 +24,24 @@ jobs:
   model:
     uses: ./.github/workflows/model.yml
 
-  release:
-    name: Publish to npm and GitHub
+  build:
+    name: Check, test and pack
     needs: model
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    env:
-      GH_TOKEN: ${{ github.token }}
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      published: ${{ steps.version.outputs.published }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           lfs: true
+          persist-credentials: false
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
           cache: pnpm
-          registry-url: https://registry.npmjs.org
       - name: Check the tag against the package and the changelog
         id: version
         run: |
@@ -49,13 +51,15 @@ jobs:
             echo "The tag $GITHUB_REF_NAME does not match packages/webtween/package.json ($package)." >&2
             exit 1
           fi
-          node tools/release/src/main.ts "$version" > "$RUNNER_TEMP/notes.md"
+          mkdir -p "$RUNNER_TEMP/release"
+          node tools/release/src/main.ts "$version" > "$RUNNER_TEMP/release/notes.md"
           echo "version=$version" >> "$GITHUB_OUTPUT"
           if npm view "@bvdmitri/webtween@$version" version > /dev/null 2>&1; then
             echo "published=true" >> "$GITHUB_OUTPUT"
           else
             echo "published=false" >> "$GITHUB_OUTPUT"
           fi
+      # The WebGPU adapter's tests render on the GPU; Mesa's software Vulkan driver stands in.
       - if: steps.version.outputs.published == 'false'
         run: sudo apt-get update && sudo apt-get install --yes --no-install-recommends mesa-vulkan-drivers
       - if: steps.version.outputs.published == 'false'
@@ -68,18 +72,58 @@ jobs:
           name: models
           path: models/
       # tools/pack copies the model into the package, checking it against its manifest.
-      - name: Build the package
+      - name: Build and pack the package
         if: steps.version.outputs.published == 'false'
-        run: pnpm --filter @bvdmitri/webtween build
-      - name: Stage on npm, for a maintainer to approve
-        if: steps.version.outputs.published == 'false'
-        working-directory: packages/webtween
-        run: npm stage publish --provenance --access public
-      - name: Create the GitHub Release
         run: |
-          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+          pnpm --filter @bvdmitri/webtween build
+          cd packages/webtween && npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/release"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release
+          path: ${{ runner.temp }}/release/
+          if-no-files-found: error
+          retention-days: 7
+
+  stage:
+    name: Stage on npm, for a maintainer to approve
+    needs: build
+    if: needs.build.outputs.published == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '26'
+          registry-url: https://registry.npmjs.org
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release
+          path: release/
+      # The tarball as packed and tested above; publishing a tarball runs none of its scripts.
+      - run: npm stage publish release/*.tgz --provenance --access public
+
+  github:
+    name: Create the GitHub Release
+    needs: [build, stage]
+    if: always() && needs.build.result == 'success' && needs.stage.result != 'failure' && needs.stage.result != 'cancelled'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release
+          path: release/
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
             echo "The release $GITHUB_REF_NAME exists."
           else
-            gh release create "$GITHUB_REF_NAME" --title "webtween ${{ steps.version.outputs.version }}" \
-              --notes-file "$RUNNER_TEMP/notes.md" --verify-tag
+            gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" \
+              --title "webtween ${{ needs.build.outputs.version }}" --notes-file release/notes.md --verify-tag
           fi
