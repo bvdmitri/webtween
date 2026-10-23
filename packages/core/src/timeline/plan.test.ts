@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import { microseconds, type Microseconds } from '../shared/units/units';
 import { planLast, planPair } from './plan';
-import { outputTime, slowdown } from './slowdown';
+import { outputTime, slowdown, slowdownSegments } from './slowdown';
 
 const us = (value: number): Microseconds => microseconds(value);
 const FRAME = 33_333;
@@ -35,6 +35,22 @@ describe('planPair', () => {
     expect(plan.tweens).toHaveLength(1);
     expect(plan.tweens[0]?.timestamp).toBe(15_000);
     expect(plan.tweens[0]?.t).toBeCloseTo(0.625, 9);
+  });
+
+  it('generates frames inside each segment by its own factor, none between them', () => {
+    const s = slowdownSegments([
+      { start: us(0), end: us(100_000), factor: 2 },
+      { start: us(200_000), end: us(300_000), factor: 4 },
+    ]);
+    expect(planPair(us(0), us(50_000), s).tweens.map((tween) => tween.t)).toEqual([0.5]);
+    expect(planPair(us(100_000), us(150_000), s).tweens).toEqual([]);
+    const fourth = planPair(us(200_000), us(250_000), s);
+    expect(fourth.first).toEqual({ timestamp: 300_000, duration: 50_000 });
+    expect(fourth.tweens).toEqual([
+      { t: 0.25, timestamp: 350_000, duration: 50_000 },
+      { t: 0.5, timestamp: 400_000, duration: 50_000 },
+      { t: 0.75, timestamp: 450_000, duration: 50_000 },
+    ]);
   });
 
   it('refuses a pair that does not run forward', () => {

@@ -14,8 +14,8 @@ import { createInterpolator, slowDown } from '@bvdmitri/webtween';
 const interpolator = await createInterpolator({
   width: 1920,
   height: 1080,
-  model: '/webtween/0.1.0/rife-4.25-fp32.onnx', // or leave it out: the package's own copy
-  wasmPaths: '/webtween/0.1.0/', // where onnxruntime-web's WebAssembly files are served
+  model: '/webtween/0.2.0/rife-4.25-fp32.onnx', // or leave it out: the package's own copy
+  wasmPaths: '/webtween/0.2.0/', // where onnxruntime-web's WebAssembly files are served
 });
 for await (const frame of slowDown(decode(), {
   interpolator,

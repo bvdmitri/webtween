@@ -9,8 +9,8 @@ and the pages beside it.
   `tools/export` from hash-pinned inputs, float32, any size in multiples of 64, checked against
   PyTorch.
 - **The timeline** (`packages/core/src/timeline`): a slowdown by a factor from 1 to 16 over the
-  whole video or a range, its time map both ways, and a streaming slowdown over any frame type
-  (ADR 0006).
+  whole video, a range, or several segments each with its own factor, its time map both ways, and
+  a streaming slowdown over any frame type (ADR 0006, 0007).
 - **The runtime** (`packages/adapters/onnx`): the model on onnxruntime-web, WebGPU first with a
   WASM fallback, loaded only on demand (ADR 0002, 0005).
 - **The shaders** (`packages/adapters/webgpu`): frames packed into the model's input and its output

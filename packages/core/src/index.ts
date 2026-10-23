@@ -5,8 +5,8 @@ export {
   secondsToMicroseconds,
 } from './shared/units/units';
 export type { Microseconds, Quantity, Seconds } from './shared/units/units';
-export { outputTime, slowdown, sourceTimeAt } from './timeline/slowdown';
-export type { Slowdown, TimeRange } from './timeline/slowdown';
+export { outputTime, slowdown, slowdownSegments, sourceTimeAt } from './timeline/slowdown';
+export type { Segment, Slowdown, TimeRange } from './timeline/slowdown';
 export { planLast, planPair } from './timeline/plan';
 export type { PairPlan, Timing, Tween } from './timeline/plan';
 export { slowStream } from './timeline/stream';

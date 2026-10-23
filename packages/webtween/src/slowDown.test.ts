@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import type { Interpolator } from './interpolator';
-import { slowDown, slowdownTimeline } from './slowDown';
+import { slowDown, slowdownTimeline, type SlowDownOptions } from './slowDown';
 import type { FakeFrame } from './testing/frames';
 import { fakeFrames, grey } from './testing/frames';
 
@@ -22,6 +22,14 @@ async function* frames(count: number): AsyncGenerator<VideoFrame> {
     await Promise.resolve();
     yield grey(200, SIZE, index * 1000);
   }
+}
+
+function run(options: object): unknown {
+  return slowDown(frames(1), {
+    interpolator,
+    frames: fakeFrames,
+    ...options,
+  } as unknown as SlowDownOptions);
 }
 
 describe('slowDown', () => {
@@ -51,6 +59,36 @@ describe('slowDown', () => {
     const stream = slowDown(frames(4), { interpolator, factor: 2, range, frames: fakeFrames });
     for await (const frame of stream) out.push(frame.timestamp);
     expect(out).toEqual([0, 1000, 2000, 3000, 4000]);
+  });
+
+  it('slows each segment by its own factor and keeps the pace between them', async () => {
+    const out: FakeFrame[] = [];
+    const segments = [
+      { start: 0, end: 0.001, factor: 2 },
+      { start: 0.002, end: 0.003, factor: 4 },
+    ];
+    const stream = slowDown(frames(5), { interpolator, segments, frames: fakeFrames });
+    for await (const frame of stream) out.push(frame as unknown as FakeFrame);
+    expect(out.map((frame) => frame.timestamp)).toEqual([
+      0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000,
+    ]);
+    expect(out.map((frame) => frame.rgba[0])).toEqual([200, 50, 200, 200, 25, 50, 75, 200, 200]);
+    expect(out.at(-1)?.duration).toBe(1000);
+  });
+
+  it('refuses segments out of order, a bad factor, and a factor beside segments', () => {
+    const overlapping = [
+      { start: 0, end: 2, factor: 2 },
+      { start: 1, end: 3, factor: 2 },
+    ];
+    expect(() => run({ segments: overlapping })).toThrow(RangeError);
+    expect(() => run({ segments: [{ start: 0, end: 1, factor: 20 }] })).toThrow(
+      'factor must be from 1 to 16, got 20',
+    );
+    expect(() => run({ factor: 2, segments: [] })).toThrow(
+      'give either factor (with an optional range) or segments, not both',
+    );
+    expect(() => slowdownTimeline({ factor: 2, segments: [] } as never)).toThrow(RangeError);
   });
 
   it('closes the frames the interpolator made once retimed', async () => {
@@ -92,11 +130,35 @@ describe('slowdownTimeline', () => {
     expect(timeline.source(2)).toBe(1.5);
     expect(slowdownTimeline({ factor: 4 }).source(4)).toBe(1);
   });
+
+  it('maps across several segments, each by its own factor', () => {
+    const timeline = slowdownTimeline({
+      segments: [
+        { start: 1, end: 2, factor: 2 },
+        { start: 3, end: 4, factor: 4 },
+      ],
+    });
+    expect([0.5, 1.5, 2.5, 3.5, 5].map((time) => timeline.output(time))).toEqual([
+      0.5, 2, 3.5, 6, 9,
+    ]);
+    expect([0.5, 2, 3.5, 6, 9].map((time) => timeline.source(time))).toEqual([
+      0.5, 1.5, 2.5, 3.5, 5,
+    ]);
+    expect(slowdownTimeline({ segments: [] }).output(3)).toBe(3);
+  });
 });
 
 describe('slowdownTimeline and slowDown together', () => {
-  it('place each source frame at exactly the time the timeline gives it', async () => {
-    const options = { factor: 1.5, range: { start: 0.02, end: 0.07 } };
+  it.each([
+    { factor: 1.5, range: { start: 0.02, end: 0.07 } },
+    {
+      segments: [
+        { start: 0.01, end: 0.04, factor: 1.5 },
+        { start: 0.04, end: 0.05, factor: 3 },
+        { start: 0.07, end: 0.09, factor: 2.5 },
+      ],
+    },
+  ])('place each source frame at exactly the time the timeline gives it', async (options) => {
     const timeline = slowdownTimeline(options);
     const sourceTimes = [0, 33_333, 66_666, 99_999];
     async function* source(): AsyncGenerator<VideoFrame> {
