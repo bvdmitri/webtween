@@ -1,6 +1,6 @@
 # ADR 0006: A slowdown is planned in the core as a timeline
 
-Status: accepted (2026-10-21)
+Status: accepted (2026-10-21), extended by ADR 0007
 
 ## Context
 

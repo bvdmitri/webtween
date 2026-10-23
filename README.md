@@ -18,8 +18,8 @@ the application that uses it. It is published on npm as
 
 - **Generates the frame at any time between two frames** with RIFE 4.25, on WebGPU through
   onnxruntime-web, or on WebAssembly where the browser has no WebGPU.
-- **Slows a stream down** by a factor from 1 to 16, over the whole video or a range, streaming two
-  frames at a time.
+- **Slows a stream down** by a factor from 1 to 16, over the whole video, a range, or several
+  segments each with its own factor, streaming two frames at a time.
 - **Maps time both ways** between the source and the slowed video, so captions or camera paths
   stay in step.
 - **Loads nothing until used**: the runtime and the model download when an interpolator is

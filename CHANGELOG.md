@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-23
+
+### Added
+
+- `slowDown` and `slowdownTimeline` take `segments`: several non-overlapping stretches of the
+  source, each slowed by its own factor from 1 to 16, the source between them at its pace.
+  `factor` with an optional `range` works as before.
+
 ## [0.1.0] - 2026-10-21
 
 ### Added
@@ -21,5 +29,6 @@ All notable changes to this project are documented here. The format follows
   `RUNTIME_FILES` name the files an application serves itself.
 - A demo page that slows a picked clip down and downloads the MP4.
 
-[Unreleased]: https://github.com/bvdmitri/webtween/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/bvdmitri/webtween/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/bvdmitri/webtween/releases/tag/v0.2.0
 [0.1.0]: https://github.com/bvdmitri/webtween/releases/tag/v0.1.0

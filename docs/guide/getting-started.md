@@ -42,10 +42,10 @@ async function slowMotion(file: File, factor: number): Promise<ArrayBuffer> {
   if (track === null) throw new Error('no video');
 
   const interpolator = await createInterpolator({
-    model: '/webtween/0.1.0/rife-4.25-fp32.onnx',
+    model: '/webtween/0.2.0/rife-4.25-fp32.onnx',
     width: track.displayWidth,
     height: track.displayHeight,
-    wasmPaths: '/webtween/0.1.0/',
+    wasmPaths: '/webtween/0.2.0/',
   });
 
   const output = new Output({ format: new Mp4OutputFormat(), target: new BufferTarget() });
@@ -72,6 +72,10 @@ async function slowMotion(file: File, factor: number): Promise<ArrayBuffer> {
 
 - `factor` 2 plays at half speed, 4 at a quarter. Pass `range: { start, end }` in seconds to slow
   down only part of the clip.
+- To slow several parts, each by its own factor, pass `segments` instead of `factor`:
+  `segments: [{ start: 3, end: 5, factor: 2 }, { start: 8, end: 9, factor: 4 }]`. Segments are
+  in seconds of the source, sorted, and do not overlap (one may start where the last ends); the
+  source between them plays at its pace. Invalid options throw a `RangeError`.
 - `slowDown` holds at most two source frames, and closes each once used. Close every frame you
   receive.
 - `interpolator.backend` says where the model runs: `webgpu` or `wasm`.
@@ -87,6 +91,15 @@ import { slowdownTimeline } from '@bvdmitri/webtween';
 const timeline = slowdownTimeline({ factor: 2, range: { start: 3, end: 5 } });
 timeline.output(4); // 5: one second into the range lands two seconds in
 timeline.source(5); // 4
+
+const two = slowdownTimeline({
+  segments: [
+    { start: 3, end: 5, factor: 2 },
+    { start: 8, end: 9, factor: 4 },
+  ],
+});
+two.output(6); // 8: two seconds later, after the first segment
+two.output(9); // 14
 ```
 
 ## Frames from anywhere
@@ -97,9 +110,9 @@ device a frame came from does not matter; frames must be the interpolator's `wid
 
 ## The timeline is exact
 
-`slowdownTimeline({ factor, range }).output(t)` is rounded to whole microseconds as `slowDown`
+`slowdownTimeline(options).output(t)`, for the same options as `slowDown`, is rounded to whole microseconds as `slowDown`
 times its frames, so for a source frame at `t` it is exactly the timestamp `slowDown` gives it.
-Place silence or shift audio after the range with it.
+Place silence or shift audio after each slowed part with it.
 
 ## Cost
 

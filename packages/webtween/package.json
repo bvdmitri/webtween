@@ -1,6 +1,6 @@
 {
   "name": "@bvdmitri/webtween",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Smooth slow motion in the browser: frames generated between frames by a neural network, on WebGPU.",
   "license": "MIT",
   "author": "bvdmitri",

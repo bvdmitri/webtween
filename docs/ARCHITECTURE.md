@@ -20,11 +20,11 @@ import rules below.
 
 ## Inside the core
 
-| Folder          | Holds                                                                                                   | Imports   |
-| --------------- | ------------------------------------------------------------------------------------------------------- | --------- |
-| `shared/units/` | Branded `Seconds` and `Microseconds` and their conversions                                              | nothing   |
-| `timeline/`     | `slowdown`, `outputTime` and `sourceTimeAt` (the time map), `planPair` and `planLast`, and `slowStream` | `shared/` |
-| `pixels/`       | `paddedSize`, and `packPlanar` and `unpackPlanar`: the model's layout and the shaders' CPU references   | nothing   |
+| Folder          | Holds                                                                                                                          | Imports   |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------- |
+| `shared/units/` | Branded `Seconds` and `Microseconds` and their conversions                                                                     | nothing   |
+| `timeline/`     | `slowdown` and `slowdownSegments`, `outputTime` and `sourceTimeAt` (the time map), `planPair` and `planLast`, and `slowStream` | `shared/` |
+| `pixels/`       | `paddedSize`, and `packPlanar` and `unpackPlanar`: the model's layout and the shaders' CPU references                          | nothing   |
 
 `slowStream` is generic over the frame type through a `Tweener` port (timing, retime, between,
 close), so the core streams frames it never sees.
@@ -33,7 +33,7 @@ close), so the core streams frames it never sees.
 
 1. `slowDown` pairs consecutive source frames and asks the core's `planPair` which frames the pair
    holds in the output: the first frame retimed, then a `t` and a timing for each generated frame
-   (ADR 0006).
+   (ADR 0006, 0007).
 2. For each generated frame, `Interpolator.between(a, b, t)` runs an engine:
    - **WebGPU** (`gpuEngine`): each frame of the pair is read as RGBA (`VideoFrame.copyTo`) and
      written to a texture once per pair; the pack shader fills the model's input buffers, the model
@@ -50,7 +50,8 @@ close), so the core streams frames it never sees.
 - `createInterpolator(options)`: loads the model (bytes or a URL) and onnxruntime-web, opens the
   model on WebGPU or WASM, and gives an `Interpolator` with `between(a, b, t)` and `destroy()`.
 - `slowDown(frames, options)`: an async generator of the slowed-down frames of a frame stream, by
-  `factor`, over an optional `range` in seconds, with `signal` and `onProgress`.
+  `factor` over an optional `range` in seconds, or by `segments` each with its own factor, with
+  `signal` and `onProgress`.
 - `slowdownTimeline(options)`: the time map in seconds (`output`, `source`), for a caller keeping
   other things in source time.
 - `WebtweenError` and its `WebtweenErrorCode`.
