@@ -21,7 +21,7 @@
     "onnxruntime-web": "1.30.0"
   },
   "devDependencies": {
-    "@types/node": "26.6.1",
+    "@types/node": "26.6.5",
     "@webgpu/types": "0.1.74",
     "vitest": "4.1.11"
   }
