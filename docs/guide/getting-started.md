@@ -42,10 +42,10 @@ async function slowMotion(file: File, factor: number): Promise<ArrayBuffer> {
   if (track === null) throw new Error('no video');
 
   const interpolator = await createInterpolator({
-    model: '/webtween/0.2.0/rife-4.25-fp32.onnx',
+    model: '/webtween/0.2.1/rife-4.25-fp32.onnx',
     width: track.displayWidth,
     height: track.displayHeight,
-    wasmPaths: '/webtween/0.2.0/',
+    wasmPaths: '/webtween/0.2.1/',
   });
 
   const output = new Output({ format: new Mp4OutputFormat(), target: new BufferTarget() });

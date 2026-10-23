@@ -103,7 +103,8 @@ jobs:
           name: release
           path: release/
       # The tarball as packed and tested above; publishing a tarball runs none of its scripts.
-      - run: npm stage publish release/*.tgz --provenance --access public
+      # The leading ./ makes npm read a file: `release/x.tgz` parses as a GitHub owner/repo.
+      - run: npm stage publish ./release/*.tgz --provenance --access public
 
   github:
     name: Create the GitHub Release
