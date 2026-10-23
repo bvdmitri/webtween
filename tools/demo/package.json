@@ -15,7 +15,7 @@
     "mediabunny": "1.61.3"
   },
   "devDependencies": {
-    "@types/node": "26.6.1",
+    "@types/node": "26.6.5",
     "@webgpu/types": "0.1.74",
     "vite": "8.1.6"
   }
