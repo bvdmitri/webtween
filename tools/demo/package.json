@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@bvdmitri/webtween": "workspace:*",
-    "mediabunny": "1.61.3"
+    "mediabunny": "1.62.1"
   },
   "devDependencies": {
     "@types/node": "26.6.5",
